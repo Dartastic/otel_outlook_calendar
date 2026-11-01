@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry instrumentation for outlook_calendar by Dartastic.io. Adds
   standard OpenTelemetry observability to applications that use
   outlook_calendar.
-version: 0.1.0
+version: 0.1.1-wip
 repository: https://github.com/dartastic/otel_outlook_calendar
 homepage: https://dartastic.io
 
