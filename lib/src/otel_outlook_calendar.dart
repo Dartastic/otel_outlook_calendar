@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_outlook_calendar_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_outlook_calendar';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class OutlookCalendarResult {
+  /// Creates a result.
   const OutlookCalendarResult({
     this.itemCount,
     this.attendeeCount,
@@ -60,8 +61,13 @@ class OutlookCalendarResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class OutlookCalendarCallResult<T> {
+  /// Creates a call result.
   const OutlookCalendarCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final OutlookCalendarResult? result;
 }
@@ -93,74 +99,74 @@ Future<T> tracedOutlookCalendar<T>({
   final span = _tracer().startSpan(
     'outlook_calendar $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.itemCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'outlook_calendar.item_count',
           r.result!.itemCount!,
         ));
       }
       if (r.result!.attendeeCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'outlook_calendar.attendee_count',
           r.result!.attendeeCount!,
         ));
       }
       if (r.result!.usedDeltaToken != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'outlook_calendar.delta_token.used',
           r.result!.usedDeltaToken!,
         ));
       }
       if (r.result!.deltaTokenReturned != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'outlook_calendar.delta_token.returned',
           r.result!.deltaTokenReturned!,
         ));
       }
       if (r.result!.deltaLinkExpired != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'outlook_calendar.delta_link.expired',
           r.result!.deltaLinkExpired!,
         ));
       }
       if (r.result!.onlineMeetingCreated != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'outlook_calendar.online_meeting.created',
           r.result!.onlineMeetingCreated!,
         ));
       }
       if (r.result!.onlineMeetingProvider != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'outlook_calendar.online_meeting.provider',
           r.result!.onlineMeetingProvider!,
         ));
       }
       if (r.result!.confidence != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'outlook_calendar.meeting_time.confidence',
           r.result!.confidence!,
         ));
       }
       if (r.result!.eventId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'outlook_calendar.event.id',
           r.result!.eventId!,
         ));
       }
       if (r.result!.requestId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'outlook_calendar.request.id',
           r.result!.requestId!,
         ));
       }
       if (r.result!.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           r.result!.statusCode!,
         ));
@@ -171,13 +177,13 @@ Future<T> tracedOutlookCalendar<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
